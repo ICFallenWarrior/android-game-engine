@@ -21,4 +21,9 @@ class DroppingRectangle(
 
         if (!isFloored) position.y += dropRate
     }
+
+    override fun hitCeiling(): Boolean {
+        //lmao it just has to exist
+        return true
+    }
 }

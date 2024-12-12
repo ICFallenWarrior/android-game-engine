@@ -74,7 +74,6 @@ class GameSurface @JvmOverloads constructor(
             gameObject.onDraw(canvas)
         }
     }
-
     internal inner class FixedUpdateTimer : TimerTask() {
         override fun run() {
             for (gameObject in gameObjects) {

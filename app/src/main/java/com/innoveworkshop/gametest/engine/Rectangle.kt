@@ -35,6 +35,11 @@ open class Rectangle(position: Vector?, var width: Float, var height: Float, col
         return (position.x + width / 2) >= gameSurface!!.width
     }
 
+    override fun hitCeiling(): Boolean {
+        TODO("Not yet implemented")
+        return false
+    }
+
     override val isFloored: Boolean
         get() = (position.y + height / 2) >= gameSurface!!.height
 }

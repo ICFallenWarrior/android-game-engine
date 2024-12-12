@@ -2,22 +2,23 @@ package com.innoveworkshop.gametest
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.innoveworkshop.gametest.assets.DroppingRectangle
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.innoveworkshop.gametest.engine.Circle
 import com.innoveworkshop.gametest.engine.GameObject
 import com.innoveworkshop.gametest.engine.GameSurface
-import com.innoveworkshop.gametest.engine.Rectangle
-import com.innoveworkshop.gametest.engine.Vector
+import java.util.Random
+
 
 class MainActivity : AppCompatActivity() {
     protected var gameSurface: GameSurface? = null
-    protected var upButton: Button? = null
-    protected var downButton: Button? = null
-    protected var leftButton: Button? = null
-    protected var rightButton: Button? = null
+    protected var circleButton: Button? = null
+    protected var scoreTextView: TextView? = null
+
 
     protected var game: Game? = null
 
@@ -28,61 +29,66 @@ class MainActivity : AppCompatActivity() {
         gameSurface = findViewById<View>(R.id.gameSurface) as GameSurface
         game = Game()
         gameSurface!!.setRootGameObject(game)
-
-        setupControls()
-    }
-
-    private fun setupControls() {
-        upButton = findViewById<View>(R.id.up_button) as Button
-        upButton!!.setOnClickListener { game!!.circle!!.position.y -= 10f }
-
-        downButton = findViewById<View>(R.id.down_button) as Button
-        downButton!!.setOnClickListener { game!!.circle!!.position.y += 10f }
-
-        leftButton = findViewById<View>(R.id.left_button) as Button
-        leftButton!!.setOnClickListener { game!!.circle!!.position.x -= 10f }
-
-        rightButton = findViewById<View>(R.id.right_button) as Button
-        rightButton!!.setOnClickListener { game!!.circle!!.position.x += 10f }
     }
 
     inner class Game : GameObject() {
         var circle: Circle? = null
+        var velocityX = 0f
+        var velocityY = 0f
+        var randomX = 0
+        var score = 0
 
         override fun onStart(surface: GameSurface?) {
             super.onStart(surface)
-
             circle = Circle(
                 (surface!!.width / 2).toFloat(),
-                (surface.height / 2).toFloat(),
+                (surface.height/2).toFloat(),
                 100f,
-                Color.RED
+                Color.WHITE
             )
             surface.addGameObject(circle!!)
+            setupControls()
+        }
 
-            surface.addGameObject(
-                Rectangle(
-                    Vector((surface.width / 3).toFloat(), (surface.height / 3).toFloat()),
-                    200f, 100f, Color.GREEN
-                )
-            )
+        private fun setupControls() {
+            circleButton = findViewById<View>(R.id.circlebutton) as Button
+            scoreTextView = findViewById<View>(R.id.textView) as TextView
 
-            surface.addGameObject(
-                DroppingRectangle(
-                    Vector((surface.width / 3).toFloat(), (surface.height / 3).toFloat()),
-                    100f, 100f, 10f, Color.rgb(128, 14, 80)
-                )
-            )
+            circleButton!!.setOnClickListener {
+                randomX = (100..gameSurface!!.width - 100).random()
+                circle!!.position.x = randomX.toFloat()
+                circle!!.position.y -= 500
+                velocityY = 40f
+                score++
+                scoreTextView!!.text = "Score: $score"
+
+                Log.d("ARE YOU BEING CLICKED", randomX.toString())
+            }
         }
 
         override fun onFixedUpdate() {
             super.onFixedUpdate()
-
-            if (!circle!!.isFloored && !circle!!.hitRightWall() && !circle!!.isDestroyed) {
-                circle!!.setPosition(circle!!.position.x + 1, circle!!.position.y + 1)
-            } else {
-                circle!!.destroy()
+            circleButton!!.y = circle!!.position.y - 60
+            circleButton!!.x = circle!!.position.x -150
+            circle!!.setPosition(circle!!.position.x + velocityX, circle!!.position.y + velocityY)
+            if(circle!!.isFloored) {
+                circle!!.setPosition(gameSurface!!.width /2.toFloat(), gameSurface!!.height/2.toFloat())
+                velocityY = 0f
+                velocityX = 0f
+                score = 0
             }
+            if(circle!!.hitCeiling()){
+                velocityY = -velocityY
+
+            }
+            if(circle!!.hitRightWall()){
+                velocityX = -velocityX
+            }
+
+            if(circle!!.hitLeftWall()){
+                velocityX = -velocityX
+            }
+            //randomX = (100..gameSurface!!.width - 100).random()
         }
     }
 }

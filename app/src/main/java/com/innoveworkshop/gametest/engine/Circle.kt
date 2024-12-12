@@ -18,7 +18,7 @@ class Circle(x: Float, y: Float, var radius: Float, color: Int) : GameObject(x, 
     }
 
     override fun hitLeftWall(): Boolean {
-        return (position.x - radius) <= gameSurface!!.width
+        return (position.x - radius) <= 0
     }
 
     override fun hitRightWall(): Boolean {
@@ -27,4 +27,8 @@ class Circle(x: Float, y: Float, var radius: Float, color: Int) : GameObject(x, 
 
     override val isFloored: Boolean
         get() = (position.y + radius) >= gameSurface!!.height
+
+    override fun hitCeiling(): Boolean {
+        return (position.y - radius) <= 0
+    }
 }

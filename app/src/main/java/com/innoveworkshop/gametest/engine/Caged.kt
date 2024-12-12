@@ -21,4 +21,6 @@ interface Caged {
      * @return True if it's on the floor, otherwise False.
      */
     val isFloored: Boolean
+
+    fun hitCeiling():Boolean
 }
